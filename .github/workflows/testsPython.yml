@@ -66,16 +66,19 @@ jobs:
   # This job will run after the Python unit tests and
   # is scaffolded to facilitate sending notifications based
   # on the test results.
-  - name: Create Notification Issue on Failure
-if: failure()
-uses: actions/github-script@v6
-with:
-script: |
-github.rest.issues.create({
-owner: context.repo.owner,
-repo: context.repo.repo,
-title: 'Workflow Alert: Job Failed!',
-body: 'The Python Unit Tests job just failed. Please check your GitHub
-Actions log.'
-})
+  notifications:
+    runs-on: ubuntu-latest
+    needs: python-unit-tests
+    steps:
+      - name: Create Notification Issue on Failure
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Workflow Alert: Job Failed!',
+              body: 'The Python Unit Tests job just failed. Please check your GitHub Actions log.'
+            })
 
